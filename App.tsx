@@ -7,14 +7,27 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text style={styles.fontSize}>Sienna Aid</Text>
-      <Button title="Klick mich! LOS!" onPress={callHome}></Button>
+      <Button title="Klick mich! LOS!" onPress={reportEvent}></Button>
     </View>
   );
 }
 
-Pedometer.watchStepCount(stepArgs => {
-  console.log(stepArgs.steps)
-});
+// var x = 0;
+// Pedometer.watchStepCount(stepArgs => {
+//   console.log(stepArgs.steps)
+
+//   x = stepArgs.steps
+// });
+
+var start = new Date();
+setInterval(() => {
+  var end = new Date();
+  Pedometer.getStepCountAsync(start, end).then((stepsArgs) => {
+    reportEvent(stepsArgs.steps);
+  });
+  start = end;
+}, 20000);
+
 
 // Pedometer.setUpdateInterval(200);
 // Pedometer.addListener(accelerometerData => {
@@ -27,15 +40,15 @@ Pedometer.watchStepCount(stepArgs => {
 //   subscription.unsubscribe();
 // }, 1000);
 
-function callHome() {
+function reportEvent(stepCount) {
   fetch('http://10.70.16.64/api/values', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      Key: "key2",
-      Value: "value4"
+      Key: "StepCount ",
+      Value: stepCount
     })
   })
   // .then((response) => response.json())
